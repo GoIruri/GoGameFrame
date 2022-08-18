@@ -14,11 +14,6 @@ type Connection struct {
 	ConnID uint32
 	//	当前的链接状态
 	isClosed bool
-<<<<<<< HEAD
-=======
-	//	当前绑定所绑定的处理业务的方法
-	handleAPI giface.HandleFunc
->>>>>>> a097f1c616f3b3e12b2139584d06eab8616b0a8b
 	//	告知当前链接已经退出的停止channel
 	ExitChan chan bool
 	//	该链接处理的方法Router
@@ -94,7 +89,6 @@ func (c *Connection) Send(data []byte) error {
 }
 
 // NewConnection 初始化链接模块的方法
-<<<<<<< HEAD
 func NewConnection(conn *net.TCPConn, connID uint32, router giface.IRouter) *Connection {
 	c := &Connection{
 		Conn:     conn,
@@ -102,15 +96,6 @@ func NewConnection(conn *net.TCPConn, connID uint32, router giface.IRouter) *Con
 		Router:   router,
 		isClosed: false,
 		ExitChan: make(chan bool),
-=======
-func NewConnection(conn *net.TCPConn, connID uint32, callbackApi giface.HandleFunc) *Connection {
-	c := &Connection{
-		Conn:      conn,
-		ConnID:    connID,
-		handleAPI: callbackApi,
-		isClosed:  false,
-		ExitChan:  make(chan bool),
->>>>>>> a097f1c616f3b3e12b2139584d06eab8616b0a8b
 	}
 	return c
 }
