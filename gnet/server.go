@@ -1,6 +1,10 @@
 package gnet
 
 import (
+<<<<<<< HEAD
+=======
+	"errors"
+>>>>>>> a097f1c616f3b3e12b2139584d06eab8616b0a8b
 	"fmt"
 	"net"
 	"zinx/giface"
@@ -20,6 +24,21 @@ type Server struct {
 	Router giface.IRouter
 }
 
+<<<<<<< HEAD
+=======
+// CallBackToClient 定义当前客户端链接的所绑定handle api(目前这个handle是写死的,以后优化应用应该由用户自定义handle方法)
+func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {
+	//	回显的业务
+	fmt.Println("[Conn Handle] callbacktoclient ...")
+	if _, err := conn.Write(data[:cnt]); err != nil {
+		fmt.Println("write back buf err", err)
+		return errors.New("CallBackToClient error")
+	}
+
+	return nil
+}
+
+>>>>>>> a097f1c616f3b3e12b2139584d06eab8616b0a8b
 // Start 启动服务器
 func (s *Server) Start() {
 	fmt.Println("start server ...")
@@ -50,7 +69,11 @@ func (s *Server) Start() {
 			}
 
 			//将处理新链接的业务方法 和 conn 进行绑定,得到我们的链接模块
+<<<<<<< HEAD
 			dealConn := NewConnection(conn, cid, s.Router)
+=======
+			dealConn := NewConnection(conn, cid, CallBackToClient)
+>>>>>>> a097f1c616f3b3e12b2139584d06eab8616b0a8b
 			cid++
 
 			//	启动当前的链接业务
@@ -77,8 +100,12 @@ func (s *Server) Serve() {
 
 // AddRouter 添加路由功能
 func (s *Server) AddRouter(router giface.IRouter) {
+<<<<<<< HEAD
 	s.Router = router
 	fmt.Println("Add Router Succ!")
+=======
+
+>>>>>>> a097f1c616f3b3e12b2139584d06eab8616b0a8b
 }
 
 // NewServer 初始化
@@ -88,7 +115,10 @@ func NewServer(name string) giface.Iserver {
 		IPVersion: "tcp4",
 		IP:        "127.0.0.1",
 		Port:      8999,
+<<<<<<< HEAD
 		Router:    nil,
+=======
+>>>>>>> a097f1c616f3b3e12b2139584d06eab8616b0a8b
 	}
 	return s
 }
