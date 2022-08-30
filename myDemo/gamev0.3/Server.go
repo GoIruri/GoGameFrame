@@ -15,21 +15,21 @@ type PingRouter struct {
 	gnet.BaseRouter
 }
 
-func (this *PingRouter) PreHandle(request giface.IRequest) {
+func (pr *PingRouter) PreHandle(request giface.IRequest) {
 	fmt.Println("Call Router PreHandle...")
 	if _, err := request.GetConnection().GetTcpConnection().Write([]byte("before ping...\n")); err != nil {
 		fmt.Println("call back ping error")
 	}
 }
 
-func (this *PingRouter) Handle(request giface.IRequest) {
+func (pr *PingRouter) Handle(request giface.IRequest) {
 	fmt.Println("Call Router Handle...")
 	if _, err := request.GetConnection().GetTcpConnection().Write([]byte("ping...ping...ping\n")); err != nil {
 		fmt.Println("ping...ping...ping error")
 	}
 }
 
-func (this *PingRouter) PostHandle(request giface.IRequest) {
+func (pr *PingRouter) PostHandle(request giface.IRequest) {
 	fmt.Println("Call Router PostHandle...")
 	if _, err := request.GetConnection().GetTcpConnection().Write([]byte("after ping\n")); err != nil {
 		fmt.Println("call back after ping error")
