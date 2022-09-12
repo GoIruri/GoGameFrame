@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"zinx/giface"
+	"zinx/utils"
 )
 
 // Server IServer接口的实现,定义一个Server的服务器模块
@@ -23,6 +24,7 @@ type Server struct {
 // Start 启动服务器
 func (s *Server) Start() {
 	fmt.Println("start server ...")
+	fmt.Printf("server name: %s\n", utils.GlobalObject.Name)
 
 	go func() {
 		//	1获取一个TCP的Addr
@@ -84,10 +86,10 @@ func (s *Server) AddRouter(router giface.IRouter) {
 // NewServer 初始化
 func NewServer(name string) giface.Iserver {
 	s := &Server{
-		Name:      name,
+		Name:      utils.GlobalObject.Name,
 		IPVersion: "tcp4",
-		IP:        "127.0.0.1",
-		Port:      8999,
+		IP:        utils.GlobalObject.Host,
+		Port:      utils.GlobalObject.TcpPort,
 		Router:    nil,
 	}
 	return s

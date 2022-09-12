@@ -23,7 +23,7 @@ type GlobalObj struct {
 var GlobalObject *GlobalObj
 
 func (g *GlobalObj) Reload() {
-	data, err := ioutil.ReadFile("conf/game.json")
+	data, err := ioutil.ReadFile("mydemo/gamev0.4/conf/game.json")
 	if err != nil {
 		panic(err)
 	}
