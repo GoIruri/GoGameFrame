@@ -38,7 +38,7 @@ func (pr *PingRouter) PostHandle(request giface.IRequest) {
 
 func main() {
 	//	1创建一个server句柄,使用api
-	s := gnet.NewServer("[game V0.2]")
+	s := gnet.NewServer("[game V0.4]")
 	//2给当前框架添加一个自定义的Router
 	s.AddRouter(&PingRouter{})
 	//	3启动server
