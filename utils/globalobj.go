@@ -14,9 +14,11 @@ type GlobalObj struct {
 	TcpPort   int
 	Name      string
 	// Game
-	Version        string
-	MaxConn        int    //当前服务器主机允许的最大链接数
-	MaxPackageSize uint32 //当前框架数据包的最大值
+	Version          string
+	MaxConn          int    //当前服务器主机允许的最大链接数
+	MaxPackageSize   uint32 //当前框架数据包的最大值
+	WorkerPoolSize   uint32 //当前业务Worker工作池的Goroutine数量
+	MaxWorkerTaskLen uint32 //框架允许用户最多开辟多少个Worker（限定条件）
 }
 
 // GlobalObject 定义一个全局的对外Global对象
@@ -37,12 +39,14 @@ func (g *GlobalObj) Reload() {
 func init() {
 	// 如果配置文件没有加载，默认的值
 	GlobalObject = &GlobalObj{
-		Name:           "GameServerApp",
-		Version:        "V0.7",
-		TcpPort:        8999,
-		Host:           "127.0.0.1",
-		MaxConn:        1000,
-		MaxPackageSize: 4096,
+		Name:             "GameServerApp",
+		Version:          "V0.7",
+		TcpPort:          8999,
+		Host:             "127.0.0.1",
+		MaxConn:          1000,
+		MaxPackageSize:   4096,
+		WorkerPoolSize:   10,   // 每个worker工作池，worker的数量
+		MaxWorkerTaskLen: 1024, // 每个worker下面的队列的任务的数量最大值
 	}
 
 	// 尝试从utils/game.json中加载一些用户自定义的参数
