@@ -25,7 +25,7 @@ type GlobalObj struct {
 var GlobalObject *GlobalObj
 
 func (g *GlobalObj) Reload() {
-	data, err := ioutil.ReadFile("mydemo/gamev0.5/conf/game.json")
+	data, err := ioutil.ReadFile("mydemo/gamev0.9/conf/game.json")
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ func init() {
 	// 如果配置文件没有加载，默认的值
 	GlobalObject = &GlobalObj{
 		Name:             "GameServerApp",
-		Version:          "V0.7",
+		Version:          "V0.9",
 		TcpPort:          8999,
 		Host:             "127.0.0.1",
 		MaxConn:          1000,

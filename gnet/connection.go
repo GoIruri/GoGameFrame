@@ -11,6 +11,8 @@ import (
 
 // Connection 链接
 type Connection struct {
+	// 当前conn隶属于哪个server
+	TcpServer giface.Iserver
 	//	当前链接的socket TCP套接字
 	Conn *net.TCPConn
 	//	链接的ID
@@ -110,6 +112,9 @@ func (c *Connection) Start() {
 	go c.StartReader()
 	//	启动从当前链接写数据的业务
 	go c.StartWriter()
+
+	// 按照开发者传递进来的 创建连接之后需要调用的处理业务，执行对应Hook函数
+	c.TcpServer.CallOnConnStart(c)
 }
 
 func (c *Connection) Stop() {
@@ -121,11 +126,17 @@ func (c *Connection) Stop() {
 	}
 	c.isClosed = true
 
+	// 调用开发者注册的在销毁链接之前 需要执行的业务Hook函数
+	c.TcpServer.CallOnConnStop(c)
+
 	//	关闭socket链接
 	c.Conn.Close()
 
 	// 告知Writer关闭
 	c.ExitChan <- true
+
+	// 将当前链接从ConnMgr中移除
+	c.TcpServer.GetConnMgr().Remove(c)
 
 	// 回收资源
 	close(c.ExitChan)
@@ -166,8 +177,9 @@ func (c *Connection) SendMsg(msgId uint32, data []byte) error {
 }
 
 // NewConnection 初始化链接模块的方法
-func NewConnection(conn *net.TCPConn, connID uint32, handle giface.IMsgHandle) *Connection {
+func NewConnection(server giface.Iserver, conn *net.TCPConn, connID uint32, handle giface.IMsgHandle) *Connection {
 	c := &Connection{
+		TcpServer:  server,
 		Conn:       conn,
 		ConnID:     connID,
 		MsgHandler: handle,
@@ -175,5 +187,9 @@ func NewConnection(conn *net.TCPConn, connID uint32, handle giface.IMsgHandle) *
 		msgChan:    make(chan []byte),
 		ExitChan:   make(chan bool),
 	}
+
+	// 将conn加入到ConnMgr中
+	c.TcpServer.GetConnMgr().Add(c)
+
 	return c
 }
