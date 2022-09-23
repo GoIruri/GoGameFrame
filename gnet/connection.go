@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"sync"
 	"zinx/giface"
 	"zinx/utils"
 )
@@ -21,10 +22,14 @@ type Connection struct {
 	isClosed bool
 	//	告知当前链接已经退出的停止channel（由Reader告知Writer退出）
 	ExitChan chan bool
-	// 无缓冲管道，用于读写goroutine之间的消息通信
+	// 无缓冲的管道，用于读写goroutine之间的消息通信
 	msgChan chan []byte
 	//	消息的管理MsgID和对应的处理业务API关系
 	MsgHandler giface.IMsgHandle
+	// 链接属性集合
+	property map[string]interface{}
+	// 保护链接属性的锁
+	protertyLock sync.RWMutex
 }
 
 // StartReader 链接的读业务的方法
@@ -176,6 +181,34 @@ func (c *Connection) SendMsg(msgId uint32, data []byte) error {
 	return nil
 }
 
+// SetProperty 设置链接属性
+func (c *Connection) SetProperty(key string, value interface{}) {
+	c.protertyLock.Lock()
+	defer c.protertyLock.Unlock()
+
+	// 添加一个链接属性
+	c.property[key] = value
+}
+
+// GetProperty 获取链接属性
+func (c *Connection) GetProperty(key string) (interface{}, error) {
+	c.protertyLock.RLock()
+	defer c.protertyLock.RUnlock()
+
+	if value, ok := c.property[key]; ok {
+		return value, nil
+	}
+	return nil, errors.New("no property found")
+}
+
+// RemoveProperty 移除链接属性
+func (c *Connection) RemoveProperty(key string) {
+	c.protertyLock.Lock()
+	defer c.protertyLock.Unlock()
+
+	delete(c.property, key)
+}
+
 // NewConnection 初始化链接模块的方法
 func NewConnection(server giface.Iserver, conn *net.TCPConn, connID uint32, handle giface.IMsgHandle) *Connection {
 	c := &Connection{
@@ -186,6 +219,7 @@ func NewConnection(server giface.Iserver, conn *net.TCPConn, connID uint32, hand
 		isClosed:   false,
 		msgChan:    make(chan []byte),
 		ExitChan:   make(chan bool),
+		property:   make(map[string]interface{}),
 	}
 
 	// 将conn加入到ConnMgr中
